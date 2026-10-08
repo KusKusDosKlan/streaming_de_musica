@@ -1,0 +1,4 @@
+vendor/
+config/api.php
+public/uploads/*
+!public/uploads/.gitkeep

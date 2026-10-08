@@ -1,6 +1,8 @@
-# Arquivos JavaScript e React
-*.js    @KusKusDosKlan/Mobile
-*.jsx   @KusKusDosKlan/Mobile
+# API Java (Spring Boot)
+/api-java/    @KusKusDosKlan/java
 
-# Arquivos Java
-*.java  @KusKusDosKlan/java
+# App mobile (React Native)
+/mobile-app/  @KusKusDosKlan/mobile
+
+# Painel admin (PHP)
+/admin-php/   @KusKusDosKlan/php

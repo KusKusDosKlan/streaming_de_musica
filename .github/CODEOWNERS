@@ -1,0 +1,6 @@
+# Arquivos JavaScript e React
+*.js    @KusKusDosKlan/Mobile
+*.jsx   @KusKusDosKlan/Mobile
+
+# Arquivos Java
+*.java  @KusKusDosKlan/java

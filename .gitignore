@@ -1,0 +1,70 @@
+/CONTRIBUTING.md
+
+# Segredos e configurações locais
+.env
+.env.*
+!.env.example
+**/application-local.yml
+**/application-secret.yml
+**/secrets/**
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+
+# Sistema operacional e IDE
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/
+*.iml
+
+# Java / Maven
+**/target/
+**/*.class
+**/hs_err_pid*
+
+# PHP / Composer
+**/vendor/
+**/public/uploads/*
+!**/public/uploads/.gitkeep
+
+# JavaScript / React Native
+**/node_modules/
+**/.npm/
+**/.yarn/cache/
+**/coverage/
+**/dist/
+**/build/
+**/.gradle/
+**/android/.gradle/
+**/android/app/build/
+**/ios/Pods/
+**/ios/build/
+**/ios/DerivedData/
+**/*.apk
+**/*.aab
+**/*.ipa
+
+# Logs, bancos locais, exports e mídia/runtime
+*.log
+logs/
+**/logs/
+backups/
+**/backups/
+*.sql.gz
+*.dump
+*.bak
+*.mp3
+*.wav
+*.flac
+*.m4a
+*.aac
+*.ogg
+*.opus
+
+# Pacotes de build gerados
+*.jar
+!**/gradle/wrapper/gradle-wrapper.jar

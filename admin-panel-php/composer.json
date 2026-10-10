@@ -1,0 +1,21 @@
+{
+  "name": "iegp3/streaming-admin-panel",
+  "description": "Painel administrativo MVC para o Sistema de Streaming de Música",
+  "type": "project",
+  "require": {
+    "php": ">=8.2",
+    "guzzlehttp/guzzle": "^7.9"
+  },
+  "autoload": {
+    "psr-4": {
+      "StreamingAdmin\\": "app/"
+    }
+  },
+  "scripts": {
+    "check": "php -l public/index.php"
+  },
+  "config": {
+    "sort-packages": true,
+    "optimize-autoloader": true
+  }
+}

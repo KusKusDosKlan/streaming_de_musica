@@ -1,23 +1,214 @@
-## Objetivo
+<!--
+COMO PREENCHER
+1. Use um título Conventional Commits: tipo(escopo): mudança concreta.
+   Exemplos de tipos: feat, fix, docs, refactor, test, ci, chore.
+2. Preencha as seções principais. Remova os blocos técnicos que não se aplicam.
+3. Marque uma caixa somente após verificar o item. Para algo não aplicável,
+   remova o item e registre a justificativa no campo correspondente.
+4. Enquanto houver implementação, teste ou decisão pendente, mantenha o PR como Draft.
+5. Configure Assignees, Reviewers, Labels, Milestone e Projects na interface do GitHub.
+   Escrever esses dados no corpo do PR não configura os campos automaticamente.
+6. Não inclua senhas, tokens, dados pessoais reais ou áudio sem autorização nas evidências.
+-->
 
-Descreva o que este PR resolve.
+## Objetivo e resultado
+
+<!-- Explique o problema, a mudança e o comportamento esperado. Evite apenas listar arquivos. -->
+**Problema ou necessidade:**
+
+**Solução implementada:**
+
+**Resultado esperado / antes e depois:**
+
+## Issues e organização da entrega
+
+| Campo | Preenchimento |
+| --- | --- |
+| Issue principal | <!-- Número ou URL da tarefa. Toda mudança deve ter uma Issue. --> |
+| Outras Issues relacionadas | <!-- Links ou “Nenhuma”. --> |
+| Project | <!-- URL do quadro; confirmar que a Issue está nele. --> |
+| Milestone | <!-- Entrega prevista, igual à da Issue; ou “Não se aplica” com motivo. --> |
+| Labels | <!-- Labels reais selecionadas na interface, coerentes com tipo e área. --> |
+| Responsável | <!-- Conta responsável pela mudança; definir também em Assignees. --> |
+| Revisor(es) | <!-- Conta(s) solicitada(s) em Reviewers, incluindo áreas afetadas. --> |
+
+<!--
+VÍNCULO E FECHAMENTO
+- Para PR de tarefa com base develop: mencione a Issue e faça o vínculo manual
+  em Development, com permissão adequada. Use “Relacionado a #NUMERO”.
+- Closes/Fixes/Resolves na descrição só têm efeito de fechamento/vínculo automático
+  quando o PR tem como destino a branch padrão. Se ela for main, o merge em develop
+  não fecha a Issue automaticamente.
+- Para PR destinado à branch padrão que conclui a tarefa: use “Closes #NUMERO”.
+- Para tarefa parcial: use referência simples, sem palavra de fechamento.
+- Release com várias Issues: use uma expressão completa de fechamento para cada
+  Issue realmente concluída. Não feche tarefas com critérios ainda pendentes.
+Substitua NUMERO pelo número real e mantenha abaixo somente a forma apropriada.
+-->
+**Referência ou fechamento das Issues:**
 
 ## Escopo
 
-- [ ] Backend Java
-- [ ] Painel PHP
+<!-- Marque todas as áreas realmente alteradas. -->
+- [ ] API / backend Java
+- [ ] Cliente web Thymeleaf
+- [ ] Painel administrativo PHP
 - [ ] App React Native
-- [ ] Documentação / infraestrutura
+- [ ] Banco / migrations Flyway
+- [ ] Infraestrutura / publicação
+- [ ] CI / configuração do repositório
+- [ ] Documentação
+
+**Principais alterações:**
+
+- <!-- Mudança concreta e seu propósito. -->
+
+**Fora do escopo / continuação:**
+<!-- Informe “Nenhum” ou vincule as Issues que continuarão o trabalho. -->
+
+## Critérios de aceite
+
+<!-- Copie os critérios relevantes da Issue e vincule uma evidência para cada um.
+Se uma entrega parcial foi combinada, registre-a na Issue e neste PR. -->
+| Critério | Como foi verificado | Resultado / evidência |
+| --- | --- | --- |
+| <!-- Critério concreto. --> | <!-- Teste ou verificação. --> | <!-- Passou, falhou ou pendente; link quando houver. --> |
 
 ## Como testar
 
-1. ...
+<!-- Escreva passos que outra pessoa consiga reproduzir. Para mudança só em
+documentação, informe páginas, links e formatação a conferir; não exija rodar o app. -->
+**Ambiente:** <!-- SO; versões relevantes; navegador ou dispositivo, se aplicável. -->
 
-## Checklist
+**Pré-requisitos:** <!-- Serviços, configuração sem valores secretos e dados fictícios necessários. -->
 
-- [ ] Minha branch foi criada a partir da base correta.
-- [ ] Revisei o diff e removi segredos, dados reais, logs e artefatos.
-- [ ] Atualizei testes/documentação quando necessário.
-- [ ] Incluí migration Flyway nova se alterei o schema; não alterei uma migration já compartilhada.
-- [ ] Não fiz o painel PHP acessar o banco diretamente.
-- [ ] Registrei impactos e dependências com outras squads.
+**Passos de reprodução:**
+
+1. Preparar o ambiente ou abrir: `<serviço, documento ou tela>`.
+2. Executar, a partir de `<pasta ou estado inicial>`: `<comando ou ação>`.
+3. Conferir: `<resultado esperado e cenário de falha/permissão, se aplicável>`.
+
+**Resultado esperado:**
+
+**Testes executados:**
+
+| Verificação | Comando ou procedimento | Resultado |
+| --- | --- | --- |
+| <!-- Ex.: regra unitária, integração, revisão de links. --> | <!-- Comando real e pasta de execução. --> | <!-- Resultado observado; não apenas “testado”. --> |
+
+**Evidências:**
+<!-- Links de CI, saída resumida, screenshots ou gravação quando úteis. Remover segredos e dados reais. -->
+
+**Não testado / limitações:**
+<!-- “Nenhum” ou explique o que falta e por quê. Pendências de aceite mantêm o PR em Draft. -->
+
+## Impactos, compatibilidade e dependências
+
+**Áreas e squads afetadas:**
+
+**Dependências de outras entregas:**
+<!-- Links de PRs/Issues que precisam entrar antes; ou “Nenhuma”. -->
+
+**Contrato ou comportamento alterado:**
+<!-- Rotas, JSON, códigos HTTP, configurações, schema, formatos locais ou “Nenhum”. -->
+
+**Mudança incompatível:** <!-- Não / Sim. Se sim, explicar consumidores afetados e plano de transição. -->
+
+**Documentação atualizada:**
+<!-- Caminhos/links do contrato, README, instruções de operação ou “Não se aplica” com motivo. -->
+
+## Publicação e recuperação
+
+<!-- Para PR sem impacto operacional, escreva “Não se aplica” e justifique.
+Merge em develop não implica publicação em produção. -->
+**Risco e efeitos possíveis:**
+
+**Ações necessárias para publicar:**
+<!-- Ordem dos módulos; migrations; variáveis novas (somente nomes); serviços ou permissões. -->
+
+**Plano de recuperação:**
+<!-- Como retornar à versão anterior; backup/restore se houver mudança em dados.
+Reverter código não desfaz automaticamente migrations ou arquivos de áudio. -->
+
+## Checklist do autor
+
+- [ ] Issue vinculada, critérios de aceite definidos e escopo conferido.
+- [ ] Branch de destino correta: tarefa para `develop`; release aprovada para `main`, salvo exceção documentada.
+- [ ] Assignees, Reviewers, Labels, Milestone e Project configurados quando aplicáveis.
+- [ ] Revisei o diff: sem segredos, dados reais, logs, backups, dependências instaladas ou artefatos de build.
+- [ ] Documentei os passos de teste, os resultados e as limitações; verifiquei os critérios desta entrega.
+- [ ] Atualizei a documentação necessária e registrei impactos nos outros módulos.
+- [ ] Checks exigidos para esta mudança passaram; se ainda não existe CI, registrei as verificações manuais.
+- [ ] O PR está pronto para revisão, sem pendência que impeça o aceite.
+
+**Itens não aplicáveis e justificativas:**
+
+<details>
+<summary>Validações específicas — manter somente os blocos aplicáveis</summary>
+
+### API, segurança e cliente web
+
+- [ ] Entradas são validadas; responses usam DTOs e erros/status seguem o contrato.
+- [ ] Autenticação, papéis e propriedade dos recursos foram testados, incluindo acesso negado.
+- [ ] Tokens, sessão, cookies e CSRF foram tratados conforme o fluxo alterado, sem exposição de credenciais.
+- [ ] Regras de negócio permanecem na camada de serviço; clientes não contornam a API para gravar dados.
+- [ ] Alterações no cliente web foram verificadas no navegador, incluindo páginas privadas sem sessão.
+
+### Banco e migrations
+
+- [ ] Criei uma migration nova; não reescrevi migration já aplicada ou compartilhada.
+- [ ] Testei a migration em banco vazio e na atualização de uma base de teste existente, quando aplicável.
+- [ ] Verifiquei relacionamentos, restrições e índices afetados, sem depender de dados de produção.
+- [ ] Documentei alterações destrutivas, compatibilidade entre versões e recuperação de dados.
+
+### Upload e streaming
+
+- [ ] Upload valida permissão, tamanho e conteúdo; o nome/caminho final é controlado pela API.
+- [ ] Áudio fica fora da raiz pública; o backend não carrega o arquivo completo na memória para atender intervalos.
+- [ ] Testei reprodução/seek e respostas `200`, `206`, `416`, arquivo ausente e acesso negado, conforme a mudança.
+- [ ] Os arquivos de teste têm autorização de uso e não incluem conteúdo indevido no repositório.
+
+### Painel PHP
+
+- [ ] Operações usam a API; o painel não acessa o MySQL diretamente.
+- [ ] Autorização e sessão administrativa foram verificadas; tokens não chegam ao navegador.
+- [ ] Falhas, timeouts e respostas inválidas da API são tratados sem expor segredos ou stack traces.
+- [ ] Formulários e operações de escrita têm validações e proteção apropriada, incluindo CSRF quando aplicável.
+
+### Mobile, offline e sincronização
+
+- [ ] Registrei o dispositivo/plataforma testado; dependências nativas foram verificadas quando alteradas.
+- [ ] Testei player, navegação e erros de rede afetados; background e reinício quando pertinentes.
+- [ ] Downloads usam armazenamento protegido e chaves seguras, sem credenciais embutidas.
+- [ ] Testei modo avião, reinício do app, licença expirada e revalidação, conforme o escopo.
+- [ ] Testei interrupção de download, integridade e falta de espaço quando o fluxo foi alterado.
+- [ ] A fila de sincronização persiste, trata conflitos/reenvios e não duplica efeitos ao repetir eventos.
+
+### Infraestrutura e CI
+
+- [ ] Novas configurações estão documentadas por ambiente, sem valores secretos.
+- [ ] HTTPS, portas expostas e permissões foram verificados conforme o escopo; banco e serviços internos não foram publicados.
+- [ ] Health-check, logs e reinício dos serviços foram testados quando afetados.
+- [ ] Backup/restore e retorno de versão foram demonstrados quando a mudança depende desses procedimentos.
+- [ ] Workflows usam permissões mínimas; checks obrigatórios concluem em todos os PRs aos quais se aplicam.
+
+### Documentação e interface
+
+- [ ] Links, Markdown, tabelas e diagramas foram conferidos na visualização do GitHub.
+- [ ] Instruções correspondem aos arquivos e comportamentos atuais; recursos futuros estão identificados.
+- [ ] Mudanças de interface incluem evidências e verificação de responsividade, estados de erro e acessibilidade relevantes.
+
+</details>
+
+## Revisão e conclusão
+
+<!-- Bloco para o revisor/mantenedor. Não marcar em nome de outra pessoa. -->
+- [ ] Outra pessoa revisou o diff e verificou a evidência dos critérios de aceite.
+- [ ] Conversas e pedidos de alteração foram resolvidos; dependências de integração foram atendidas.
+- [ ] Checks exigidos passaram e não há conflito pendente; a revisão corresponde à versão atual do PR.
+
+**Após o merge — responsável e ação:**
+<!-- Atualizar o Project e a Issue; indicar versão/tag quando houver release.
+No fluxo develop/main, distinguir “integrado em develop” de “disponível na release”.
+Não marcar a Issue como concluída apenas porque um PR parcial foi mesclado.
+Conferir automações do Project: status de PR e status de Issue podem ter regras diferentes. -->

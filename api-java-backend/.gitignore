@@ -1,0 +1,6 @@
+/target/
+/.env
+/application-local.yml
+/logs/
+*.log
+*.jar

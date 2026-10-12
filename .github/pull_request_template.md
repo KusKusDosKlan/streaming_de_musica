@@ -74,33 +74,72 @@ Se uma entrega parcial foi combinada, registre-a na Issue e neste PR. -->
 | --- | --- | --- |
 | <!-- Critério concreto. --> | <!-- Teste ou verificação. --> | <!-- Passou, falhou ou pendente; link quando houver. --> |
 
-## Como testar
+## Validação
 
-<!-- Escreva passos que outra pessoa consiga reproduzir. Para mudança só em
-documentação, informe páginas, links e formatação a conferir; não exija rodar o app. -->
-**Ambiente:** <!-- SO; versões relevantes; navegador ou dispositivo, se aplicável. -->
+<!--
+Preencha conforme a alteração deste PR.
+Inclua somente verificações relevantes e realmente realizadas.
+Quando um campo não se aplicar, escreva “Não se aplica” e explique brevemente.
+Não inclua senhas, tokens ou dados pessoais nas instruções e evidências.
+-->
 
-**Pré-requisitos:** <!-- Serviços, configuração sem valores secretos e dados fictícios necessários. -->
+### Ambiente e preparação
 
-**Passos de reprodução:**
+**Ambiente utilizado:**
+<!-- Sistema operacional, versões relevantes, navegador ou dispositivo. -->
 
-1. Preparar o ambiente ou abrir: `<serviço, documento ou tela>`.
-2. Executar, a partir de `<pasta ou estado inicial>`: `<comando ou ação>`.
-3. Conferir: `<resultado esperado e cenário de falha/permissão, se aplicável>`.
+**Pré-requisitos:**
+<!-- Serviços necessários, configuração e dados fictícios para reproduzir a validação. -->
+
+### Como conferir a alteração
+
+<!-- Descreva passos concretos para outra pessoa verificar a entrega.
+Para documentação, indique arquivos, conteúdo, links e formatação a conferir.
+Para código, indique a pasta de execução, comandos e ações necessárias.
+Adicione ou remova passos conforme o escopo.
+-->
+
+1. Preparar ou acessar: `<ambiente, arquivo ou tela>`.
+2. Executar ou conferir: `<comando, ação ou conteúdo>`.
+3. Verificar: `<comportamento ou resultado esperado>`.
 
 **Resultado esperado:**
+<!-- Explique o resultado que comprova os critérios de aceite da Issue. -->
 
-**Testes executados:**
+### Verificação realizada pelo autor
 
-| Verificação | Comando ou procedimento | Resultado |
+<!-- Registre o que foi verificado e o resultado observado.
+Podem ser testes automatizados, verificações manuais ou revisão de documentação.
+Não marque como aprovado algo que ainda não foi conferido.
+-->
+
+| Verificação | Comando ou procedimento utilizado | Resultado observado |
 | --- | --- | --- |
-| <!-- Ex.: regra unitária, integração, revisão de links. --> | <!-- Comando real e pasta de execução. --> | <!-- Resultado observado; não apenas “testado”. --> |
+| `<item verificado>` | `<como foi conferido>` | `<resultado>` |
 
-**Evidências:**
-<!-- Links de CI, saída resumida, screenshots ou gravação quando úteis. Remover segredos e dados reais. -->
+**Cenários adicionais verificados:**
+<!-- Quando aplicável: entrada inválida, acesso negado, falha de rede,
+ausência de dados, responsividade ou regressão em outro módulo. -->
 
-**Não testado / limitações:**
-<!-- “Nenhum” ou explique o que falta e por quê. Pendências de aceite mantêm o PR em Draft. -->
+### Evidências
+
+<!-- Inclua links de execução da CI, saída resumida de comandos,
+screenshots ou gravações quando ajudarem o revisor.
+Se não forem necessárias, explique como reproduzir a verificação.
+-->
+
+### Pendências e limitações
+
+**O que não foi verificado:**
+<!-- Informe “Nenhum” ou descreva a verificação pendente. -->
+
+**Motivo e impacto:**
+<!-- Explique por que não foi verificado e o que isso impede de confirmar. -->
+
+**Próxima ação:**
+<!-- Informe como resolver a pendência e vincule uma Issue, se necessário.
+Pendências que impeçam cumprir os critérios de aceite mantêm o PR em Draft.
+-->
 
 ## Impactos, compatibilidade e dependências
 

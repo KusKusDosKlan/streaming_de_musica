@@ -1,6 +1,6 @@
 ---
 name: Tarefa técnica
-description: Registrar atividade do projeto
+about: Registrar uma atividade do projeto
 labels: ["triagem"]
 ---
 

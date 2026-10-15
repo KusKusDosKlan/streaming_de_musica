@@ -1,8 +1,14 @@
-# API Java (Spring Boot)
-/api-java/    @KusKusDosKlan/java
+# Responsáveis pelos módulos
 
-# App mobile (React Native)
-/mobile-app/  @KusKusDosKlan/mobile
+/api-java-backend/        @KusKusDosKlan/java
+/admin-panel-php/         @KusKusDosKlan/php
+/mobile-app-reactnative/  @KusKusDosKlan/mobile
 
-# Painel admin (PHP)
-/admin-php/   @KusKusDosKlan/php
+# Documentação compartilhada
+
+/docs/      @KusKusDosKlan/java @KusKusDosKlan/php @KusKusDosKlan/mobile
+/README.md  @KusKusDosKlan/java @KusKusDosKlan/php @KusKusDosKlan/mobile
+
+# Revisão das próprias regras de responsabilidade
+
+/.github/CODEOWNERS  @KusKusDosKlan/java @KusKusDosKlan/php @KusKusDosKlan/mobile

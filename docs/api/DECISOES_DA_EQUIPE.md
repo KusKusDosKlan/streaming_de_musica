@@ -2,15 +2,15 @@
 
 **Issue principal:** I01. **Critério específico:** I07, caixa 4, sobre validade restante de access tokens.
 
-As decisões abaixo já têm uma proposta concreta. Java, PHP e mobile devem revisar os nomes e efeitos antes de implementar. **Situação: proposta; revisão entre squads pendente.**
+As decisões abaixo já têm uma proposta concreta. Java, PHP e mobile devem revisar os nomes e efeitos antes de implementar. **Situação: proposta; revisão entre squads concluida.**
 
 | Assunto | Proposta | Motivo / impacto |
 | --- | --- | --- |
 | Prefixo REST | `/api/v1` | Todos os clientes usam a mesma base |
 | Papéis | USER e ADMIN | Cadastro público cria somente USER |
 | E-mail não verificado | Login retorna 403 `EMAIL_NOT_VERIFIED`, sem tokens | Confirmação é parte do fluxo da fundação |
-| Access token | JWT assinado, validade de 15 min; `expiresIn: 900` | Limita a validade restante após logout/reset |
-| Refresh token | Valor aleatório opaco, 7 dias, hash armazenado no banco | Pode ser revogado e não precisa carregar informações no token |
+| Access token | JWT assinado, validade de 10 min; `expiresIn: 900` | Limita a validade restante após logout/reset |
+| Refresh token | Valor aleatório opaco, 24 horas, hash armazenado no banco | Pode ser revogado e não precisa carregar informações no token |
 | Renovação | Cada refresh válido é consumido/revogado e substituído; operação atômica | O mesmo refresh antigo não pode gerar dois novos acessos |
 | Logout REST | `POST /auth/logout` com refresh no corpo; revoga o refresh e apaga tokens do cliente | Sem exigir access válido, pois ele pode ter expirado |
 | Reutilização de refresh | 401, sem emissão de novos tokens | Detecção de uso duplicado; revogação de toda uma família de tokens é melhoria futura, não requisito oculto |
@@ -49,8 +49,8 @@ As respostas 401/403 acima dependem da configuração final. A política tempor�
 
 | Área | Responsável pela revisão | Resultado |
 | --- | --- | --- |
-| Java | A definir pela squad | Pendente |
-| PHP | A definir pela squad | Pendente |
-| Mobile | A definir pela squad | Pendente |
+| Java | Nicolas| Concluido |
+| PHP | Ronaldo | Concluido |
+| Mobile | Pedro | Concluido |
 
 Registrar a aprovação com comentário na I01 e link do PR. A existência desta tabela não é aprovação. Se alterarem qualquer decisão, atualizem os exemplos da API e os casos de teste no mesmo PR.

@@ -275,8 +275,9 @@ Divisão prevista no documento técnico:
 | --- | ---: | --- |
 | Backend Java | 4 | API, cliente web, dados, autenticação, e-mail, streaming, sincronização e testes. |
 | Mobile React Native | 2 | Interface, consumo da API, player, downloads e persistência local. |
-| Painel PHP | 2 | Sessão administrativa, telas, formulários e integração com os endpoints admin. |
-| Infraestrutura | 1 | Servidor físico, rede, publicação, monitoramento, backups e expansão cloud. |
+| Painel PHP | 4 | Sessão administrativa, telas, formulários e integração com os endpoints admin. |
+Obs: Os grupos "Backend Java" e "Painel PHP" Estão interligados.
+
 
 Cada squad terá um ponto de contato para integração e documentação. Um segundo integrante deverá acompanhar os procedimentos de publicação e recuperação para que a operação não dependa de uma única pessoa.
 

@@ -1,275 +1,133 @@
 # Sistema de Streaming de Música
 
-Plataforma acadêmica de streaming com catálogo musical, playlists e reprodução online no navegador e no celular. O aplicativo mobile também permitirá ouvir faixas previamente baixadas, com controle de acesso offline e sincronização quando a conexão retornar.
+Projeto acadêmico de uma plataforma de música com catálogo compartilhado, reprodução online e aplicativo com suporte futuro a músicas baixadas para uso offline.
 
-A solução será desenvolvida por uma equipe de nove integrantes e organizada em um monorepositório: **API e cliente web em Java Spring Boot**, **painel administrativo em PHP** e **aplicativo em React Native**. A API Java centralizará as regras de negócio, a autorização e o acesso ao banco de dados.
+A solução reúne uma API e um cliente web em Java Spring Boot, um painel administrativo em PHP e um aplicativo em React Native. O backend Java centraliza as regras de negócio, a autenticação, a autorização e o acesso ao MySQL.
 
-**Repositório:** [KusKusDosKlan/streaming_de_musica](https://github.com/KusKusDosKlan/streaming_de_musica)
+> **Estado atual:** estrutura inicial dos módulos e documentação da fundação. Os principais fluxos ainda precisam ser implementados e testados. A versão funcional v0.1.0 ainda não foi concluída.
 
-> **Status:** desenvolvimento inicial. O repositório contém a estrutura dos módulos, configurações, uma migration SQL e arquivos-base. Os principais fluxos ainda precisam ser implementados e testados. As funcionalidades descritas neste README representam o escopo planejado, salvo quando identificadas como existentes.
+## Objetivo
 
-## Sumário
+Desenvolver um sistema integrado em que:
 
-- [Objetivo e escopo](#objetivo-e-escopo)
-- [Arquitetura](#arquitetura)
-- [Tecnologias](#tecnologias)
-- [Organização do código](#organização-do-código)
-- [Dados e contratos da API](#dados-e-contratos-da-api)
-- [Streaming, downloads e sincronização](#streaming-downloads-e-sincronização)
-- [Ambiente de desenvolvimento](#ambiente-de-desenvolvimento)
-- [Plano de implementação](#plano-de-implementação)
-- [Equipe e colaboração](#equipe-e-colaboração)
-- [Testes e critérios de entrega](#testes-e-critérios-de-entrega)
-- [Publicação e continuidade](#publicação-e-continuidade)
-- [Segurança, licenças e decisões pendentes](#segurança-licenças-e-decisões-pendentes)
-- [Documentação](#documentação)
+- O administrador organiza o catálogo por meio do painel PHP.
+- O usuário consulta e reproduz músicas pela web ou pelo aplicativo.
+- O aplicativo permite, em uma etapa posterior, reproduzir arquivos previamente baixados sem conexão.
+- A equipe consegue executar e validar o projeto localmente antes da publicação em servidor.
 
-## Objetivo e escopo
-
-O projeto busca oferecer uma experiência de biblioteca musical integrada: o administrador publica o catálogo, o usuário encontra e reproduz músicas, e o aplicativo mantém os downloads autorizados disponíveis mesmo sem conexão.
-
-| Frente | Funcionalidades planejadas |
-| --- | --- |
-| Conta do usuário | Cadastro, login, confirmação de e-mail, recuperação de senha e papéis `USER` e `ADMIN`. |
-| Catálogo | Artistas, álbuns, faixas, busca e listagens paginadas. |
-| Biblioteca pessoal | Criação e edição de playlists, organização de faixas e histórico de reprodução. |
-| Cliente web | Páginas Thymeleaf, autenticação por sessão e player no navegador. |
-| Aplicativo mobile | Catálogo, player online, reprodução em segundo plano, downloads protegidos e reprodução offline. |
-| Administração | Gestão de catálogo e usuários, upload de áudio e relatórios básicos, sempre por meio da API. |
-| Operação | HTTPS, serviços do Windows, monitoramento, logs, backups e publicação de versões aprovadas. |
-
-O primeiro ambiente de publicação previsto no documento técnico é um servidor físico com **Windows Server 2019**. A expansão para **Microsoft Azure** começará pelo backup externo; contingência e hospedagem na nuvem serão etapas posteriores, conforme as decisões da equipe.
-
-Planos pagos e o papel `PREMIUM` estão fora da entrega inicial até que seu escopo seja aprovado.
+O escopo escolar não inclui planos pagos, cobrança, DRM ou validade temporal obrigatória para reprodução offline.
 
 ## Arquitetura
 
-A API Java será a **única fonte de verdade**. O painel PHP consumirá endpoints administrativos e não terá credenciais nem conexão direta com o MySQL. Os clientes mobile e web usarão as mesmas regras de catálogo, acesso e playlists.
+| Componente | Responsabilidade |
+| --- | --- |
+| API Java | Disponibilizar endpoints REST e aplicar regras de conta, catálogo e administração |
+| Web Thymeleaf | Apresentar as páginas do usuário, utilizando sessão e os serviços Java |
+| Painel PHP | Oferecer a interface administrativa e consumir a API por HTTP |
+| App React Native | Apresentar o catálogo e integrar os fluxos mobile |
+| MySQL | Armazenar contas, metadados e relacionamentos |
+| Armazenamento de áudio | Guardar os arquivos de música, com acesso controlado pelo backend nas versões de reprodução |
 
-```mermaid
-flowchart TD
-    Mobile["App React Native"] -->|"HTTPS / JSON"| IIS["IIS e proxy reverso"]
-    Browser["Navegador do usuário"] -->|HTTPS| IIS
-    IIS -->|"API e páginas web"| Java["Spring Boot: REST e Thymeleaf"]
-    IIS -->|"Painel administrativo"| PHP["PHP MVC"]
-    PHP -->|"HTTPS / API administrativa"| Java
-    Java --> DB["MySQL"]
-    Java --> Audio["Armazenamento de áudio"]
-    Java --> Mail["Serviço SMTP"]
-```
+O painel PHP não acessa diretamente o MySQL. As operações administrativas passam pela API Java.
 
-O diagrama representa a implantação planejada. O app será instalado no dispositivo; o servidor executará a API, o cliente web e o painel administrativo.
-
-### Responsabilidades dos módulos
-
-- **Java:** autenticação, autorização, validações, catálogo, playlists, streaming, upload definitivo, licenças offline, sincronização e envio de e-mails.
-- **PHP:** sessão do administrador, formulários e telas de gestão, chamadas HTTP à API e apresentação dos resultados. A API repetirá as validações necessárias antes de persistir qualquer alteração.
-- **React Native:** interface do usuário, consumo da API, player, gerenciamento de downloads e dados locais, armazenamento seguro e fila de sincronização.
-- **Infraestrutura:** rede, certificados, IIS, serviços, permissões, observabilidade, backups e recuperação.
-
-### Fluxo de uma música
-
-1. O administrador envia o áudio e os metadados pelo painel PHP.
-2. O PHP encaminha a solicitação autenticada à API Java.
-3. A API valida o arquivo e a permissão, grava o áudio no armazenamento protegido e salva seus metadados no MySQL.
-4. Os clientes consultam o catálogo e pedem a reprodução à API.
-5. A API verifica o acesso e entrega os trechos de áudio solicitados pelo player.
+A API REST e o cliente web compartilham a camada de serviços. Assim, as regras de negócio permanecem centralizadas.
 
 ## Tecnologias
 
-| Camada | Base atual ou tecnologia planejada |
+| Área | Base do projeto |
 | --- | --- |
-| Backend | Java 17, Maven e Spring Boot **3.5.16**, conforme o `pom.xml` atual. |
-| Web e persistência | Spring MVC, Thymeleaf, Spring Data JPA, Bean Validation, MySQL 8.x e Flyway. |
-| Segurança e operação | Spring Security, BCrypt, JWT a implementar, Spring Mail e Actuator. |
-| Painel administrativo | PHP **8.2+**, Composer, arquitetura MVC e Guzzle. |
-| Mobile | React Native **0.87.0**, React **19.2.0**, TypeScript e Axios, conforme o `package.json` atual. |
-| Dados locais e player | Banco local, biblioteca de áudio e integração com armazenamento seguro ainda serão selecionados e validados. |
-| Servidor | Windows Server 2019, IIS, FastCGI, ARR/URL Rewrite e serviço para execução do JAR. |
-| Continuidade | Backup local e externo; Microsoft Azure como expansão planejada. |
+| Backend | Java 17, Spring Boot 3.5.16 e Maven |
+| Web | Spring MVC e Thymeleaf |
+| Persistência | Spring Data JPA, MySQL 8.x e Flyway |
+| Segurança | Spring Security |
+| E-mail | JavaMailSender e SMTP de teste |
+| Administração | PHP e Composer |
+| Mobile | React Native, React e TypeScript |
 
-As versões acima descrevem os manifests existentes, não uma certificação de compatibilidade de todo o sistema. Atualizações e bibliotecas nativas deverão ser avaliadas em PRs próprios, com os testes dos módulos afetados.
+As versões declaradas nos manifests devem orientar a preparação do ambiente. Alterações de versão precisam ser combinadas e validadas pela equipe.
 
-## Organização do código
+## Organização do repositório
 
-| Caminho | Responsabilidade |
+| Caminho | Conteúdo |
 | --- | --- |
-| [`api-java-backend/`](api-java-backend/) | API REST, aplicação web, persistência, segurança, e-mail e migrations. |
-| [`admin-panel-php/`](admin-panel-php/) | Painel administrativo e integração HTTP com a API. |
-| [`mobile-app-reactnative/`](mobile-app-reactnative/) | Aplicativo, telas, player, downloads e sincronização. |
-| [`docs/`](docs/) | Documentação de colaboração e limites entre repositório e servidor. |
-| `.github/` | Modelos de Issues e Pull Requests; workflows poderão ser adicionados durante a implantação da CI. |
+| `api-java-backend/` | API REST, cliente web, serviços, persistência e testes Java |
+| `admin-panel-php/` | Painel administrativo e cliente HTTP da API |
+| `mobile-app-reactnative/` | Aplicativo e organização inicial dos recursos mobile |
+| `docs/` | Escopo, comunicação da API e orientações da equipe |
+| `.github/` | Templates e regras de colaboração |
 
-### Backend Java
+No Java, os controllers recebem as requisições, os services aplicam as regras e os repositories acessam os dados. Os DTOs definem os campos de entrada e saída da API.
 
-O pacote existente é `com.IEGP3.streamingApp`; o nome definitivo do produto e do pacote ainda será definido.
+## Primeira versão: v0.1.0 — Fundação
 
-| Pasta ou camada | Como será usada |
-| --- | --- |
-| `controller/rest/` | Receber requisições JSON do app e expor os contratos REST. |
-| `controller/web/` | Atender o navegador e renderizar páginas Thymeleaf. |
-| `controller/admin/` | Expor operações administrativas protegidas. |
-| `dto/` | Definir os dados de entrada e saída, sem expor entidades JPA diretamente. |
-| `service/` | Aplicar regras de negócio, autorização sobre recursos e coordenação das operações. |
-| `repository/` e `model/` | Consultar e representar os dados persistidos com JPA. |
-| `security/` e `config/` | Configurar tokens, sessões, permissões e integrações. |
-| `util/StorageService` | Controlar o acesso aos arquivos de áudio. |
-| `resources/db/migration/` | Versionar o banco com Flyway. |
-| `resources/templates/` e `static/` | Manter páginas, templates de e-mail e recursos do cliente web. |
+A fundação prevê:
 
-O fluxo REST seguirá **requisição → controller/DTO → service → repository → banco**. Streaming e upload também usarão o serviço de armazenamento. O tratamento centralizado de erros será acrescentado durante a implementação.
+- Configuração dos ambientes locais.
+- Banco versionado com Flyway.
+- Cadastro, confirmação de e-mail e recuperação de senha.
+- Login, renovação de acesso e logout.
+- Permissões USER e ADMIN.
+- Consulta paginada de metadados do catálogo.
+- Administração inicial de artistas e álbuns.
+- Integração básica com web, painel PHP e Android.
+- Testes e documentação para reproduzir a execução.
 
-### Painel e aplicativo
+**Esta versão ainda não exige tocar músicas.**
 
-O PHP está organizado em `app/controllers/`, `app/models/`, `app/views/` e `app/core/`, com entrada em `public/index.php`. Os models serão clientes da API, e não modelos de acesso ao banco. O `ApiClient` já possui a base de uma chamada GET; as operações de escrita, upload e tratamento de erros ainda serão desenvolvidas.
+Player, streaming, upload de áudio, playlists, download, reprodução offline e publicação em servidor pertencem às etapas seguintes.
 
-O mobile separa `src/api/`, `screens/`, `components/`, `navigation/`, `store/`, `services/`, `database/`, `hooks/` e `utils/`. Essa divisão permite desenvolver a interface sem misturar o player, o acesso físico aos arquivos e a sincronização.
-
-## Dados e contratos da API
-
-A migration inicial [`V1__create_tables.sql`](api-java-backend/src/main/resources/db/migration/V1__create_tables.sql) contém as tabelas `roles`, `users`, `artists`, `albums`, `tracks`, `playlists`, `playlist_tracks`, `downloads`, `play_history` e `verification_tokens`.
-
-O banco armazenará metadados e relacionamentos. Os binários de áudio ficarão em uma pasta protegida, identificados por caminhos controlados pelo servidor. Uma playlist pertencerá a um usuário e se relacionará com várias faixas por meio de `playlist_tracks`.
-
-As entidades atuais ainda precisam receber os campos e relacionamentos completos. Alterações no schema deverão entrar em **novas migrations**; migrations já compartilhadas ou aplicadas não serão reescritas.
-
-### Principais endpoints planejados
-
-Prefixo: **`/api/v1`**. A tabela resume o contrato de referência; os métodos ainda não estão implementados nos controllers atuais.
-
-| Grupo | Método e rota | Finalidade |
-| --- | --- | --- |
-| Conta | `POST /auth/register`, `/auth/login` e `/auth/refresh` | Cadastro, autenticação e renovação de acesso. |
-| E-mail | `POST /auth/verify-email`, `/auth/forgot-password` e `/auth/reset-password` | Verificação e recuperação de conta. |
-| Catálogo | `GET /tracks?search=&page=&size=` e `GET /tracks/{id}` | Busca, paginação e detalhes de faixas. |
-| Artistas e álbuns | `GET /artists/{id}` e `GET /albums/{id}` | Consulta de detalhes e relacionamentos. |
-| Reprodução | `GET /tracks/{id}/stream` | Entrega de áudio com HTTP Range. |
-| Playlists | `GET/POST /playlists`, `PUT/DELETE /playlists/{id}` | Gestão das playlists do usuário. |
-| Faixas da playlist | `POST /playlists/{id}/tracks` e `DELETE /playlists/{id}/tracks/{trackId}` | Adição e remoção de faixas. |
-| Offline | `POST /tracks/{id}/download-token` e `GET /tracks/{id}/download` | Autorização e download protegido. |
-| Sincronização | `POST /sync` | Envio de alterações locais e recebimento de mudanças do servidor. |
-| Administração | `POST /admin/tracks` e `PUT /admin/tracks/{id}` | Upload e atualização de faixas. |
-| Administração | `GET /admin/users` e `GET /admin/reports/usage` | Gestão de usuários e relatório de uso. |
-
-Os contratos detalhados definirão payloads, paginação, erros, datas em UTC e validações. A API REST usará tokens; o cliente web usará sessão. Rotas de autenticação terão regras próprias, e um token de download não substituirá indiscriminadamente o token de acesso.
-
-As operações administrativas exigirão `ADMIN`. Alterações em playlists serão autorizadas pela propriedade do recurso, e não apenas pelo papel do usuário.
-
-## Streaming, downloads e sincronização
-
-### Reprodução online
-
-A API entregará o áudio sem carregar o arquivo inteiro na memória. O player poderá solicitar intervalos de bytes para avançar e retroceder:
-
-- `200`: entrega completa quando não houver `Range`.
-- `206`: intervalo válido, com `Content-Range` e tamanho do trecho.
-- `416`: intervalo inválido, com o tamanho disponível informado conforme o protocolo.
-- `404`: faixa ou arquivo inexistente.
-- `401/403`: acesso ausente ou não autorizado.
-
-### Reprodução offline
-
-1. O app solicitará autorização de download à API.
-2. A API verificará o acesso e retornará um token temporário e a validade da licença offline.
-3. O app baixará e verificará o arquivo, armazenando-o de forma protegida, com chave mantida no armazenamento seguro do sistema.
-4. Metadados, validade e disponibilidade offline serão registrados no banco local.
-5. O player reproduzirá a faixa baixada sem buscar o arquivo na rede.
-6. Ao reconectar, o app revalidará o acesso e tratará licenças expiradas ou revogadas.
-
-A integração entre player, criptografia e armazenamento nativo será validada em uma prova de conceito antes da implementação completa. A proteção local não será apresentada como DRM inviolável.
-
-**Offline é uma funcionalidade do app:** músicas já baixadas poderão tocar sem conexão, mas login remoto, novos downloads e atualização do catálogo dependerão do servidor. Uma revogação feita enquanto o aparelho estiver desconectado só poderá ser conhecida ao reconectar; a validade local limitará o acesso nesse intervalo.
-
-### Sincronização
-
-Alterações em playlists e registros de reprodução offline serão guardados em uma fila persistente. Ao reconectar, o app enviará os eventos para `/sync` e receberá alterações, mapeamentos entre IDs locais e IDs do servidor e downloads revogados.
-
-Antes de desenvolver esse fluxo, a equipe definirá identificadores únicos de evento, política de conflito, ordem de processamento e reenvio. **Repetir uma requisição não poderá duplicar seus efeitos.** O relógio do dispositivo não será a única referência para ordenar mudanças.
-
-## Ambiente de desenvolvimento
-
-### Estado atual
-
-| Parte existente | Limite atual |
-| --- | --- |
-| Configuração Spring, Flyway e Actuator | A configuração de segurança permite `/actuator/health` e bloqueia as demais rotas. |
-| Controllers, services, DTOs e entidades | São arquivos-base; os fluxos de negócio e mapeamentos completos ainda estão pendentes. |
-| Entrada do painel e cliente Guzzle | O painel mostra uma página inicial; autenticação, roteamento MVC e CRUD ainda serão conectados. |
-| Telas e serviços mobile | Player, downloads, criptografia e banco local estão pendentes. Os projetos nativos `android/` e `ios/` ainda não existem nessa estrutura. |
-| Modelos de Issue e PR | Já estão presentes em `.github/`; a automação de CI ainda será acrescentada. |
+## Execução local
 
 ### Preparação
 
-Instale Git, um JDK compatível com o backend, Maven, MySQL 8.x, PHP 8.2+ e Composer. Para mobile, use Node.js e o ambiente Android compatíveis com a versão aprovada do React Native. A compilação iOS exigirá macOS e Xcode.
+Para começar, configure:
 
-```bash
-git clone https://github.com/KusKusDosKlan/streaming_de_musica.git
-cd streaming_de_musica
-```
+- JDK 17 e Maven, instalado no sistema ou disponibilizado pela IDE.
+- MySQL local.
+- PHP e Composer para o painel.
+- Ambiente Node/Android compatível para a preparação mobile.
+- SMTP de teste para validar mensagens sem utilizar destinatários reais.
 
-### Backend
+Utilize as variáveis descritas nos exemplos dos módulos. Não coloque senhas, tokens ou configurações privadas no Git.
 
-Crie o banco vazio `streaming_app` e uma conta local de desenvolvimento. Configure as variáveis no terminal ou na IDE usando [`api-java-backend/.env.example`](api-java-backend/.env.example) como referência.
+Os arquivos `.env.example` são referências de configuração. Sua existência não significa que cada módulo carregue arquivos `.env` automaticamente.
 
-```bash
-cd api-java-backend
+### Java
+
+Na pasta `api-java-backend`, configure as variáveis de banco e os serviços necessários. Depois execute:
+
+```sh
 mvn spring-boot:run
 ```
 
-O projeto atual não inclui Maven Wrapper; esse comando exige Maven instalado e disponível no `PATH`. O Spring não está configurado para carregar automaticamente um arquivo `.env`.
+O endereço local padrão é:
 
-O endereço local padrão é `http://localhost:8080`; o health-check é `http://localhost:8080/actuator/health`. O Flyway aplicará a migration ao iniciar, e o Hibernate está configurado para validar o schema. A inicialização e o health-check não comprovam que login ou player já funcionam.
+```text
+http://localhost:8080
+```
 
-### Painel PHP
+O health-check está em:
 
-Em outro terminal, na raiz do repositório:
+```text
+http://localhost:8080/actuator/health
+```
 
-```bash
-cd admin-panel-php
+A configuração inicial de segurança libera o health-check e bloqueia as demais rotas. Os endpoints documentados precisam ser implementados antes de serem utilizados pelos clientes.
+
+### PHP
+
+Na pasta `admin-panel-php`:
+
+```sh
 composer install
 php -S 127.0.0.1:8000 -t public
 ```
 
-Acesse `http://127.0.0.1:8000` para visualizar a página inicial. O servidor embutido do PHP é apenas para desenvolvimento. Para integrar chamadas, configure `STREAMING_API_BASE_URL` e `STREAMING_ADMIN_API_TOKEN` no ambiente do processo PHP; a validação desse token na API ainda será implementada.
+A página inicial fica em:
 
-### Mobile
-
-Gere a base nativa com a versão de React Native aprovada pela equipe em uma pasta temporária e integre `android/`, `ios/` e as configurações ao módulo existente, preservando `src/` e `App.tsx`. Somente depois configure as dependências e execute o app no emulador ou aparelho.
-
-O cliente atual contém a URL de desenvolvimento em [`src/api/apiClient.ts`](mobile-app-reactnative/src/api/apiClient.ts). O `.env.example` documenta a intenção de configuração, mas ainda não há integração automática dessa variável. Em aparelho físico, `localhost` aponta para o próprio celular; use um endereço do computador que o dispositivo consiga alcançar.
-
-### Configuração por ambiente
-
-| Variáveis | Uso |
-| --- | --- |
-| `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` | Conexão MySQL da API. |
-| `STORAGE_AUDIO_DIR` | Caminho dos arquivos de áudio. |
-| `JWT_SECRET` | Segredo da futura implementação JWT. |
-| `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD` | Serviço de e-mail. |
-| `MAIL_SMTP_AUTH`, `MAIL_SMTP_STARTTLS` | Configuração SMTP do ambiente local. |
-| `APP_PUBLIC_BASE_URL`, `SERVER_PORT`, `SPRING_PROFILES_ACTIVE` | Endereço público, porta e perfil de execução. |
-| `STREAMING_API_BASE_URL`, `STREAMING_ADMIN_API_TOKEN` | Integração do painel com a API. |
-
-HTTP é usado pelos arquivos atuais para desenvolvimento local. A publicação prevista exige HTTPS, inclusive na comunicação PHP–API; certificados e a conexão interna segura precisarão ser configurados. Não reutilize os padrões locais em produção.
-
-## Plano de implementação
-
-A equipe trabalhará em entregas pequenas e integradas. Primeiro será implementado um fluxo completo — autenticar, consultar uma faixa e reproduzi-la — antes de ampliar o catálogo e o offline.
-
-| Etapa | Desenvolvimento | Entrega verificável |
-| --- | --- | --- |
-| 1. Fundação | Completar entidades, DTOs, migrations e contratos; implementar cadastro, login e autorização. | Fluxos de conta testados; usuário comum não acessa operações administrativas. |
-| 2. Streaming | Serviço de arquivos, HTTP Range e players web/mobile online. | Uma faixa autorizada toca e permite avançar/retroceder; respostas `206` e `416` testadas. |
-| 3. Administração | Login administrativo, catálogo e upload via API. | Uma faixa cadastrada pelo painel aparece no catálogo e pode ser reproduzida. |
-| 4. Offline | Prova de conceito do player protegido, downloads, banco local, licenças e sincronização. | Faixa toca após reiniciar o app em modo avião; reenvio não duplica eventos. |
-| 5. Infraestrutura | Ambiente de teste, serviços do Windows, IIS, HTTPS e backup automatizado com cópia externa. | Acesso de outro dispositivo, recuperação após reboot e restauração demonstrados. |
-| 6. Consolidação | Busca, playlists, histórico, relatórios, testes integrados e revisão da experiência. | Critérios de entrega aprovados e release identificada por tag. |
-
-Playlists e histórico terão seus contratos definidos cedo, pois também serão utilizados pela sincronização. A etapa final consolida esses recursos; não adia todas as suas dependências para o fim.
-
-## Equipe e colaboração
-
-Divisão prevista no documento técnico:
+```text
+http://127.0.0.1:8000
+```
 
 | Squad | Integrantes | Responsabilidade |
 | --- | ---: | --- |
@@ -279,96 +137,61 @@ Divisão prevista no documento técnico:
 Obs: Os grupos "Backend Java" e "Painel PHP" Estão interligados.
 
 
-Cada squad terá um ponto de contato para integração e documentação. Um segundo integrante deverá acompanhar os procedimentos de publicação e recuperação para que a operação não dependa de uma única pessoa.
+### Mobile
 
-### Fluxo de trabalho no GitHub
+A estrutura atual ainda precisa da integração do projeto nativo Android. A existência dos diretórios e scripts não comprova que o aplicativo já inicia.
 
-1. Registre a tarefa em uma [Issue](https://github.com/KusKusDosKlan/streaming_de_musica/issues), com responsável, objetivo, dependências e critérios de aceite.
-2. Organize as tarefas em um Project com estados **A fazer → Em andamento → Em revisão → Concluído**. Use Milestones para agrupar as entregas do roadmap.
-3. Crie uma branch curta a partir de `develop`, como `feature/backend-streaming-range` ou `fix/mobile-player`.
-4. Faça commits pequenos, revise o diff e abra um [Pull Request](https://github.com/KusKusDosKlan/streaming_de_musica/pulls) para `develop`.
-5. Peça revisão a outra pessoa e registre como validar a alteração. No mesmo repositório, use `Closes #NUMERO` para associar a tarefa; o fechamento automático ocorre ao integrar na branch padrão, não necessariamente no primeiro merge em `develop`.
-6. Após os testes integrados, abra o PR de release de `develop` para `main` e identifique a versão aprovada com uma tag.
+A preparação e a validação do app fazem parte da Issue #17.
 
-`main` representará versões aprovadas; `develop`, a integração. O fluxo da equipe exige PR e ao menos uma aprovação para ambas. As regras de proteção deverão ser configuradas e conferidas na Organization; sua existência não é comprovada apenas por este README.
+No emulador Android padrão, o endereço do computador hospedeiro normalmente utiliza `10.0.2.2`. Em aparelho físico, utilize um endereço do computador acessível pela rede local.
 
-Use Conventional Commits (`feat:`, `fix:`, `docs:`, `test:`). Alterações em contratos, migrations ou configurações compartilhadas devem indicar os impactos nas outras squads.
+## Testes
 
-## Testes e critérios de entrega
+Na pasta `api-java-backend`:
 
-| Área | Validações necessárias |
-| --- | --- |
-| Backend | Testes unitários de regras com JUnit/Mockito e integração com banco de teste. |
-| Autenticação | Login inválido, token expirado, recuperação de senha, verificação de e-mail e tentativa de acesso administrativo por `USER`. |
-| Propriedade de recursos | Um usuário não pode alterar a playlist de outro. |
-| Streaming | Intervalos válidos e inválidos, início/fim do arquivo, seek, arquivo removido e autorização antes da entrega. |
-| Painel | Upload válido/inválido, falha de API, sessão administrativa e ausência de acesso direto ao banco. |
-| Mobile | Aparelho real, modo avião, reinício, segundo plano, falta de espaço e download interrompido. |
-| Sincronização | Reenvio do mesmo evento, conflito e interrupção de rede sem duplicação. |
-| Operação | HTTPS, reinício dos serviços, firewall, restauração de banco e áudio e procedimento de retorno de versão. |
-
-Comandos existentes para a base atual:
-
-```bash
-# Dentro de api-java-backend/
-mvn verify
-
-# Dentro de admin-panel-php/
-composer check
-
-# Dentro de mobile-app-reactnative/, após instalar as dependências
-npm run typecheck
+```sh
+mvn test
 ```
 
-O teste Java atual é de carregamento do contexto; não constitui cobertura dos requisitos. `composer check` verifica a sintaxe de `public/index.php`, e `typecheck` verifica tipos, sem validar reprodução ou offline. A cobertura será ampliada conforme os fluxos forem implementados.
+O teste inicial existente é mínimo e não comprova os fluxos de conta, segurança ou catálogo.
 
-Uma entrega será considerada pronta quando seus critérios estiverem demonstrados, o PR estiver revisado, a documentação estiver atualizada e as verificações relevantes passarem. CI será acrescentada para automatizar os checks; falhas não deverão ser ignoradas para integrar uma alteração.
+As funcionalidades devem receber testes de regras de negócio, respostas HTTP e persistência conforme seu escopo. Testes com banco precisam utilizar uma base separada da utilizada no desenvolvimento.
 
-## Publicação e continuidade
+Para alterações somente documentais, conferir conteúdo, exemplos, caminhos e apresentação no GitHub.
 
-No ambiente planejado, o IIS receberá o tráfego HTTPS e encaminhará `/api/*` e as páginas do usuário ao Spring Boot; `/admin/*` atenderá o painel PHP. Os endpoints administrativos da API permanecerão sob `/api/v1/admin/*`, separados do caminho público do painel.
+## Trabalho em equipe
 
-O Java será distribuído como JAR de uma versão aprovada e executado como serviço do Windows. MySQL e portas internas não serão publicados diretamente na internet. A pasta de áudio ficará fora da raiz pública, com permissões limitadas à conta do serviço.
+A distribuição planejada é:
 
-| GitHub | Ambiente operacional |
-| --- | --- |
-| Código, migrations, testes, documentação e exemplos sem segredos. | JAR aprovado, painel publicado, banco, áudio, certificados e configuração efetiva. |
-| Histórico, PRs e tags. | Logs, backups e dados reais protegidos. |
+| Frente | Integrantes |
+| --- | ---: |
+| Java e web | 4 |
+| Mobile | 2 |
+| PHP | 2 |
+| Infraestrutura | 1 |
 
-A publicação seguirá: **versão aprovada → build → backup → ambiente de teste → validação → ambiente estável**. Migrations e alterações de dados terão planejamento próprio de recuperação; reverter o código não reverte automaticamente o banco.
+Cada Issue deve ter um responsável principal e apoio definido. Alterações passam por branch própria e PR para `develop`.
 
-A primeira entrega de continuidade será um backup consistente do banco e dos arquivos, com cópia externa criptografada e restauração testada em ambiente separado. A contingência em Azure dependerá de orçamento, procedimentos e metas de recuperação definidos. Dois servidores gravando em bancos independentes não serão usados como solução de disponibilidade.
+A branch `main` recebe integrações aprovadas. A versão v0.1.0 será identificada por tag somente após a validação integrada da fundação.
 
-## Segurança, licenças e decisões pendentes
+Consulte o [fluxo da equipe](docs/FLUXO-DE-EQUIPE.md).
 
-- Senhas serão protegidas com BCrypt. Tokens de e-mail terão expiração e uso único; access e refresh tokens terão política de renovação e revogação.
-- A sessão web terá cookies seguros e proteção CSRF. Permissões e propriedade de recursos serão verificadas no servidor.
-- Tokens administrativos ficarão no processo PHP, nunca no HTML ou JavaScript entregue ao navegador.
-- Uploads terão limites de tamanho, validação do conteúdo e nome definido pelo servidor. Caminhos fornecidos pelo cliente não serão usados livremente.
-- Segredos, certificados, dados pessoais, áudio, backups e logs não serão commitados. Exemplos de ambiente permanecerão sem credenciais reais.
-- Serão usadas apenas músicas próprias ou com autorização de reprodução e distribuição compatível com o projeto.
+## Cuidados com dados e configuração
 
-Decisões que precisam ser registradas antes da implementação correspondente:
-
-| Decisão | Impacto |
-| --- | --- |
-| Biblioteca de player e armazenamento local | Compatibilidade com React Native, execução em segundo plano, reprodução de conteúdo protegido e licença de uso. |
-| Validade da licença offline | Prazo de reprodução sem conexão e tratamento de expiração/revogação. |
-| Identificador e conflitos da sincronização | Idempotência, ordenação, reenvio e conciliação de mudanças. |
-| Autenticação administrativa PHP–API | Identidade do administrador, credencial de serviço, auditoria e rotação de tokens. |
-| Escopo cloud | Backup externo, contingência ou hospedagem ativa, com custo e recuperação definidos. |
-| Nome e licença do projeto | Identificação do produto e condições de uso do código. |
-
-O repositório ainda não possui arquivo `LICENSE`. A equipe deverá definir a licença do código e verificar as licenças das dependências antes da distribuição. Direitos sobre o código e direitos sobre o catálogo musical são tratados separadamente.
+- Não versionar senhas, tokens, backups ou dados pessoais.
+- Utilizar dados fictícios nos testes e nas evidências.
+- Não expor hashes, caminhos físicos de armazenamento ou informações internas nas respostas públicas.
+- Criar novas migrations para alterações do banco; não reescrever migrations compartilhadas ou aplicadas.
+- Não versionar dependências instaladas, caches ou saídas de build.
 
 ## Documentação
 
-- [Backend Java](api-java-backend/README.md)
-- [Painel administrativo PHP](admin-panel-php/README.md)
-- [Aplicativo React Native](mobile-app-reactnative/README.md)
+- [Escopo do projeto](docs/ESCOPO_DO_PROJETO.md)
+- [Índice da documentação da API](docs/api/api-contratos.md)
+- [Comunicação da API v0.1.0](docs/api/COMUNICACAO_API_v0.1.0.md)
+- [Decisões da equipe](docs/api/DECISOES_DA_EQUIPE.md)
 - [Fluxo da equipe](docs/FLUXO-DE-EQUIPE.md)
-- [GitHub e servidor: responsabilidades e arquivos](docs/GITHUB-VS-SERVIDOR.md)
+- [GitHub e servidor](docs/GITHUB-VS-SERVIDOR.md)
+- [Arquitetura de referência](docs/arquitetura-streaming.pdf)
 
-**Referência de requisitos:** *Requisitos Técnicos — Sistema de Streaming de Música*, versão consolidada de 10/10/2026. O guia de equipe em `docs/FLUXO-DE-EQUIPE.md` ainda apresenta a divisão anterior de squads; sua atualização deverá acompanhar a divisão de nove integrantes descrita neste README.
-
-**Base de código consultada:** branch `main`, [commit `8ebf78d`](https://github.com/KusKusDosKlan/streaming_de_musica/tree/8ebf78df2476090340dbff4e7932696bcdcb8755), em 12/10/2026.
+As decisões ainda identificadas como propostas precisam ser revisadas pelas áreas envolvidas antes da implementação.

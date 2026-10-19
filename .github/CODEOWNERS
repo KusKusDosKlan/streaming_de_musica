@@ -1,14 +1,14 @@
 # Responsáveis pelos módulos
 
-/api-java-backend/        @KusKusDosKlan/java | php
-/admin-panel-php/         @KusKusDosKlan/java | php
+/api-java-backend/        @KusKusDosKlan/java-php
+/admin-panel-php/         @KusKusDosKlan/java-php
 /mobile-app-reactnative/  @KusKusDosKlan/mobile
 
 # Documentação compartilhada
 
-/docs/      @KusKusDosKlan/java | php @KusKusDosKlan/mobile
-/README.md  @KusKusDosKlan/java @KusKusDosKlan/php @KusKusDosKlan/mobile
+/docs/      @KusKusDosKlan/java-php @KusKusDosKlan/mobile
+/README.md  @KusKusDosKlan/java-php @KusKusDosKlan/mobile
 
 # Revisão das próprias regras de responsabilidade
 
-/.github/CODEOWNERS  @KusKusDosKlan/java | php @KusKusDosKlan/mobile
+/.github/CODEOWNERS  @KusKusDosKlan/java-php @KusKusDosKlan/mobile

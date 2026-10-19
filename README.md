@@ -129,7 +129,13 @@ A página inicial fica em:
 http://127.0.0.1:8000
 ```
 
-A configuração definitiva de rotas, autenticação e integração será concluída na Issue #18.
+| Squad | Integrantes | Responsabilidade |
+| --- | ---: | --- |
+| Backend Java | 4 | API, cliente web, dados, autenticação, e-mail, streaming, sincronização e testes. |
+| Mobile React Native | 2 | Interface, consumo da API, player, downloads e persistência local. |
+| Painel PHP | 4 | Sessão administrativa, telas, formulários e integração com os endpoints admin. |
+Obs: Os grupos "Backend Java" e "Painel PHP" Estão interligados.
+
 
 ### Mobile
 

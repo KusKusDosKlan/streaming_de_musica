@@ -2,7 +2,12 @@
 
 Este documento define como distribuir tarefas, trabalhar com Git, revisar alterações e acompanhar a entrega do projeto.
 
-## Distribuição planejada
+| Squad | Pessoas | Escopo inicial |
+|---|---:|---|
+| Backend Java | 4 | Autenticação/segurança; entidades e migrations; catálogo/streaming; e-mail, playlists, sincronização e testes de integração. Dividir explicitamente os arquivos e contratos para reduzir conflitos. |
+| Mobile React Native | 3 | Navegação e telas; consumo da API/autenticação; player, downloads/offline e sincronização. Adicionar bibliotecas nativas em PR próprio e testar compatibilidade. |
+| Admin PHP | 4 | Estrutura MVC e sessão; integração via `ApiClient`; dashboard, listagem e upload por endpoints da API. Não criar conexão direta ao MySQL. |
+Obs: Os grupos "Backend Java" e "Admin PHP" estão interligados.
 
 | Frente | Pessoas | Responsabilidade |
 | --- | ---: | --- |
